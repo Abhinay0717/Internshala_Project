@@ -1,0 +1,202 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Internship Portal</title>
+    <link rel="stylesheet" href="{% static 'core/style.css' %}">
+</head>
+
+<body data-french-verified="{{ french_verified|yesno:'true,false' }}">
+
+    <h1 id="title">Internship Portal</h1>
+
+    <h2 id="heading">Find Your Dream Internship</h2>
+
+    <p id="description">
+        Search and apply for internships easily.
+    </p>
+
+    <select id="language" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="hi">Hindi</option>
+        <option value="pt">Portuguese</option>
+        <option value="zh">Chinese</option>
+        <option value="fr">French</option>
+    </select>
+
+    <br><br>
+
+    <button id="search">Search Internships</button>
+    <button id="login">Login</button>
+    <button id="register">Register</button>
+
+
+    <script>
+
+        const translations = {
+
+            en: {
+                title: "Internship Portal",
+                heading: "Find Your Dream Internship",
+                description: "Search and apply for internships easily.",
+                search: "Search Internships",
+                login: "Login",
+                register: "Register"
+            },
+
+            es: {
+                title: "Portal de Pasantías",
+                heading: "Encuentra tu pasantía ideal",
+                description: "Busca y solicita pasantías fácilmente.",
+                search: "Buscar pasantías",
+                login: "Iniciar sesión",
+                register: "Registrarse"
+            },
+
+            hi: {
+                title: "इंटर्नशिप पोर्टल",
+                heading: "अपनी पसंद की इंटर्नशिप खोजें",
+                description: "आसानी से इंटर्नशिप खोजें और आवेदन करें।",
+                search: "इंटर्नशिप खोजें",
+                login: "लॉगिन",
+                register: "रजिस्टर करें"
+            },
+
+            pt: {
+                title: "Portal de Estágios",
+                heading: "Encontre seu estágio ideal",
+                description: "Pesquise e candidate-se a estágios facilmente.",
+                search: "Pesquisar estágios",
+                login: "Entrar",
+                register: "Registrar"
+            },
+
+            zh: {
+                title: "实习门户",
+                heading: "寻找理想的实习机会",
+                description: "轻松搜索并申请实习。",
+                search: "搜索实习",
+                login: "登录",
+                register: "注册"
+            },
+
+            fr: {
+                title: "Portail de Stages",
+                heading: "Trouvez votre stage idéal",
+                description: "Recherchez et postulez facilement à des stages.",
+                search: "Rechercher des stages",
+                login: "Connexion",
+                register: "S'inscrire"
+            }
+        };
+
+
+        function changeLanguage() {
+
+            const language =
+                document.getElementById("language").value;
+
+
+            if (language === "fr") {
+
+                window.location.href =
+                    "/send-language-otp/";
+
+                return;
+            }
+
+
+            localStorage.setItem(
+                "language",
+                language
+            );
+
+
+            document.getElementById("title").innerText =
+                translations[language].title;
+
+
+            document.getElementById("heading").innerText =
+                translations[language].heading;
+
+
+            document.getElementById("description").innerText =
+                translations[language].description;
+
+
+            document.getElementById("search").innerText =
+                translations[language].search;
+
+
+            document.getElementById("login").innerText =
+                translations[language].login;
+
+
+            document.getElementById("register").innerText =
+                translations[language].register;
+        }
+
+
+        window.onload = function() {
+
+            const savedLanguage =
+                localStorage.getItem("language");
+
+
+            if (savedLanguage && savedLanguage !== "fr") {
+
+                document.getElementById("language").value =
+                    savedLanguage;
+
+                changeLanguage();
+            }
+
+
+            if (
+                document.body.dataset.frenchVerified === "true"
+            ) {
+
+                document.getElementById("language").value =
+                    "fr";
+
+
+                document.getElementById("title").innerText =
+                    translations.fr.title;
+
+
+                document.getElementById("heading").innerText =
+                    translations.fr.heading;
+
+
+                document.getElementById("description").innerText =
+                    translations.fr.description;
+
+
+                document.getElementById("search").innerText =
+                    translations.fr.search;
+
+
+                document.getElementById("login").innerText =
+                    translations.fr.login;
+
+
+                document.getElementById("register").innerText =
+                    translations.fr.register;
+
+
+                localStorage.setItem(
+                    "language",
+                    "fr"
+                );
+            }
+
+        };
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>French Language Verification</title>
+</head>
+
+<body>
+
+    <h1>French Language Verification</h1>
+
+    <p>{{ message }}</p>
+
+    <p>Enter the OTP sent to your registered email.</p>
+
+    <form method="POST" action="{% url 'verify_otp' %}">
+        {% csrf_token %}
+
+        <input
+            type="text"
+            name="otp"
+            placeholder="Enter OTP"
+            maxlength="6"
+            required
+        >
+
+        <button type="submit">Verify OTP</button>
+    </form>
+
+</body>
+</html>
