@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Edit Post</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button,
+        .button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back {
+            background: #6c757d;
+        }
+
+        .message {
+            background: #fff3cd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="box">
+
+        <h1>
+            Edit Post
+        </h1>
+
+        <p>
+            You can edit this post only within the configured
+            edit time limit.
+        </p>
+
+
+        {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button
+                type="submit"
+            >
+                Update Post
+            </button>
+
+        </form>
+
+
+        <br>
+
+        <a
+            href="{% url 'public_space' %}"
+            class="button back"
+        >
+            ← Back to Public Space
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

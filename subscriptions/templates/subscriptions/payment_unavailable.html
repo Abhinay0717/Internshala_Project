@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Unavailable</title>
+</head>
+
+<body>
+
+    <h1>Payment Currently Unavailable</h1>
+
+    <p>
+        You selected the
+        <strong>{{ plan.get_name_display }}</strong>
+        plan.
+    </p>
+
+    <p>
+        Payment can only be initiated between
+        <strong>5:00 AM and 11:45 AM IST</strong>.
+    </p>
+
+    <p>
+        Please try again during the allowed payment time.
+    </p>
+
+    <a href="{% url 'subscription_plans' %}">
+        ← Back to Subscription Plans
+    </a>
+
+</body>
+</html>

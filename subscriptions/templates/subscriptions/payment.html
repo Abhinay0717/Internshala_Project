@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment</title>
+</head>
+<body>
+
+    <h1>Confirm Subscription</h1>
+
+    <h2>{{ plan.get_name_display }}</h2>
+
+    <p>Price: ₹{{ plan.price }}/month</p>
+
+    {% if plan.monthly_application_limit %}
+        <p>
+            Applications:
+            {{ plan.monthly_application_limit }} per month
+        </p>
+    {% else %}
+        <p>Applications: Unlimited</p>
+    {% endif %}
+
+    {% if plan.name == 'free' %}
+
+        <p>This is the Free plan. No payment is required.</p>
+
+        <button type="button">
+            Activate Free Plan
+        </button>
+
+    {% else %}
+
+        <p>
+            Payment can be initiated only between
+            <strong>5:00 AM and 11:45 AM IST</strong>.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <button type="submit">
+                Proceed to Payment
+            </button>
+        </form>
+
+    {% endif %}
+
+    <br><br>
+
+    <a href="{% url 'subscription_plans' %}">
+        ← Back to Plans
+    </a>
+
+</body>
+</html>

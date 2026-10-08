@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Friend Requests</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .accept {
+            background: #28a745;
+        }
+
+        .back {
+            background: #6c757d;
+        }
+
+        .sent {
+            background: #ffc107;
+            color: black;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>
+        Friend Requests
+    </h1>
+
+
+    <!-- RECEIVED REQUESTS -->
+
+    <h2>
+        Received Requests
+    </h2>
+
+    {% for request in received_requests %}
+
+        <div class="box">
+
+            <h2>
+                {{ request.sender.username }}
+            </h2>
+
+            <p>
+                Sent:
+                {{ request.created_at }}
+            </p>
+
+            <form
+                method="post"
+                action="{% url 'accept_friend_request' request.id %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="button accept"
+                >
+                    ✓ Accept
+                </button>
+
+            </form>
+
+        </div>
+
+    {% empty %}
+
+        <div class="box">
+
+            <p>
+                No pending friend requests.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+
+    <!-- SENT REQUESTS -->
+
+    <h2>
+        Sent Requests
+    </h2>
+
+    {% for request in sent_requests %}
+
+        <div class="box">
+
+            <h2>
+                {{ request.receiver.username }}
+            </h2>
+
+            <p>
+                Sent:
+                {{ request.created_at }}
+            </p>
+
+            <span class="button sent">
+                Friend Request Pending
+            </span>
+
+        </div>
+
+    {% empty %}
+
+        <div class="box">
+
+            <p>
+                No sent friend requests.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+
+    <br>
+
+    <a
+        href="{% url 'public_space' %}"
+        class="button back"
+    >
+        ← Back to Public Space
+    </a>
+
+</div>
+
+</body>
+
+</html>

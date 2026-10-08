@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cancel Subscription</title>
+</head>
+
+<body>
+
+    <h1>Cancel Subscription</h1>
+
+    <p>
+        Are you sure you want to cancel your
+        <strong>{{ subscription.plan.get_name_display }}</strong>
+        subscription?
+    </p>
+
+    <p>
+        Your current subscription will be marked as cancelled.
+    </p>
+
+    <p>
+        <strong>Expiry Date:</strong>
+        {{ subscription.end_date }}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button type="submit">
+            Yes, Cancel Subscription
+        </button>
+
+        <a href="{% url 'subscription_dashboard' %}">
+            No, Go Back
+        </a>
+    </form>
+
+</body>
+</html>

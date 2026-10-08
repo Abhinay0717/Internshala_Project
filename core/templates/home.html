@@ -1,202 +1,358 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Internship Portal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title id="page-title">Internship Portal</title>
+
     <link rel="stylesheet" href="{% static 'core/style.css' %}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 60px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.1);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #555;
+            font-size: 18px;
+        }
+
+        .language-box {
+            margin-bottom: 30px;
+            text-align: right;
+        }
+
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .buttons {
+            margin-top: 30px;
+        }
+
+        .buttons a {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 8px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .buttons a:hover {
+            background: #0056b3;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            background: #fff3cd;
+            color: #856404;
+            display: none;
+        }
+    </style>
 </head>
 
-<body data-french-verified="{{ french_verified|yesno:'true,false' }}">
+<body>
 
-    <h1 id="title">Internship Portal</h1>
+<div class="container">
 
-    <h2 id="heading">Find Your Dream Internship</h2>
+    <div class="language-box">
+        <label for="languageSelect">
+            <strong id="languageLabel">Language:</strong>
+        </label>
 
-    <p id="description">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="hi">हिन्दी</option>
+            <option value="pt">Português</option>
+            <option value="zh">中文</option>
+            <option value="fr">Français</option>
+        </select>
+    </div>
+
+    <h1 id="main-title">Find Your Dream Internship</h1>
+
+    <p id="main-description">
         Search and apply for internships easily.
     </p>
 
-    <select id="language" onchange="changeLanguage()">
-        <option value="en">English</option>
-        <option value="es">Spanish</option>
-        <option value="hi">Hindi</option>
-        <option value="pt">Portuguese</option>
-        <option value="zh">Chinese</option>
-        <option value="fr">French</option>
-    </select>
+    <div class="buttons">
 
-    <br><br>
+        <a href="#" id="search-link">
+            Search Internships
+        </a>
 
-    <button id="search">Search Internships</button>
-    <button id="login">Login</button>
-    <button id="register">Register</button>
+        <a href="{% url 'login' %}" id="login-link">
+            Login
+        </a>
+
+        <a href="#" id="register-link">
+            Register
+        </a>
+
+    </div>
+
+    <div id="languageMessage" class="message"></div>
+
+</div>
 
 
-    <script>
+<script>
 
-        const translations = {
+const translations = {
 
-            en: {
-                title: "Internship Portal",
-                heading: "Find Your Dream Internship",
-                description: "Search and apply for internships easily.",
-                search: "Search Internships",
-                login: "Login",
-                register: "Register"
-            },
+    en: {
+        pageTitle: "Internship Portal",
+        language: "Language:",
+        title: "Find Your Dream Internship",
+        description: "Search and apply for internships easily.",
+        search: "Search Internships",
+        login: "Login",
+        register: "Register"
+    },
 
-            es: {
-                title: "Portal de Pasantías",
-                heading: "Encuentra tu pasantía ideal",
-                description: "Busca y solicita pasantías fácilmente.",
-                search: "Buscar pasantías",
-                login: "Iniciar sesión",
-                register: "Registrarse"
-            },
+    es: {
+        pageTitle: "Portal de Pasantías",
+        language: "Idioma:",
+        title: "Encuentra tu pasantía ideal",
+        description: "Busca y postúlate a pasantías fácilmente.",
+        search: "Buscar Pasantías",
+        login: "Iniciar Sesión",
+        register: "Registrarse"
+    },
 
-            hi: {
-                title: "इंटर्नशिप पोर्टल",
-                heading: "अपनी पसंद की इंटर्नशिप खोजें",
-                description: "आसानी से इंटर्नशिप खोजें और आवेदन करें।",
-                search: "इंटर्नशिप खोजें",
-                login: "लॉगिन",
-                register: "रजिस्टर करें"
-            },
+    hi: {
+        pageTitle: "इंटर्नशिप पोर्टल",
+        language: "भाषा:",
+        title: "अपनी पसंद की इंटर्नशिप खोजें",
+        description: "आसानी से इंटर्नशिप खोजें और आवेदन करें।",
+        search: "इंटर्नशिप खोजें",
+        login: "लॉगिन",
+        register: "रजिस्टर करें"
+    },
 
-            pt: {
-                title: "Portal de Estágios",
-                heading: "Encontre seu estágio ideal",
-                description: "Pesquise e candidate-se a estágios facilmente.",
-                search: "Pesquisar estágios",
-                login: "Entrar",
-                register: "Registrar"
-            },
+    pt: {
+        pageTitle: "Portal de Estágios",
+        language: "Idioma:",
+        title: "Encontre seu estágio ideal",
+        description: "Pesquise e candidate-se a estágios facilmente.",
+        search: "Pesquisar Estágios",
+        login: "Entrar",
+        register: "Registrar"
+    },
 
-            zh: {
-                title: "实习门户",
-                heading: "寻找理想的实习机会",
-                description: "轻松搜索并申请实习。",
-                search: "搜索实习",
-                login: "登录",
-                register: "注册"
-            },
+    zh: {
+        pageTitle: "实习门户",
+        language: "语言：",
+        title: "寻找您理想的实习机会",
+        description: "轻松搜索并申请实习。",
+        search: "搜索实习",
+        login: "登录",
+        register: "注册"
+    },
 
-            fr: {
-                title: "Portail de Stages",
-                heading: "Trouvez votre stage idéal",
-                description: "Recherchez et postulez facilement à des stages.",
-                search: "Rechercher des stages",
-                login: "Connexion",
-                register: "S'inscrire"
+    fr: {
+        pageTitle: "Portail de Stages",
+        language: "Langue :",
+        title: "Trouvez votre stage idéal",
+        description: "Recherchez et postulez facilement à des stages.",
+        search: "Rechercher des stages",
+        login: "Connexion",
+        register: "S'inscrire"
+    }
+
+};
+
+
+function applyLanguage(language) {
+
+    const translation = translations[language];
+
+    if (!translation) {
+        return;
+    }
+
+    document.title = translation.pageTitle;
+
+    document.getElementById("page-title").innerText =
+        translation.pageTitle;
+
+    document.getElementById("languageLabel").innerText =
+        translation.language;
+
+    document.getElementById("main-title").innerText =
+        translation.title;
+
+    document.getElementById("main-description").innerText =
+        translation.description;
+
+    document.getElementById("search-link").innerText =
+        translation.search;
+
+    document.getElementById("login-link").innerText =
+        translation.login;
+
+    document.getElementById("register-link").innerText =
+        translation.register;
+
+    document.getElementById("languageSelect").value =
+        language;
+}
+
+
+function changeLanguage(language) {
+
+    /*
+     * French requires OTP verification.
+     */
+    if (language === "fr") {
+
+        fetch("{% url 'send_language_otp' %}", {
+            method: "POST",
+
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Content-Type": "application/json"
             }
-        };
+        })
+        .then(response => {
 
-
-        function changeLanguage() {
-
-            const language =
-                document.getElementById("language").value;
-
-
-            if (language === "fr") {
-
-                window.location.href =
-                    "/send-language-otp/";
-
-                return;
+            if (!response.ok) {
+                throw new Error("OTP request failed");
             }
 
+            return response.text();
+        })
+        .then(() => {
 
-            localStorage.setItem(
-                "language",
-                language
+            window.location.href =
+                "{% url 'verify_otp' %}";
+
+        })
+        .catch(() => {
+
+            showMessage(
+                "Unable to send OTP. Please try again."
             );
 
+        });
 
-            document.getElementById("title").innerText =
-                translations[language].title;
-
-
-            document.getElementById("heading").innerText =
-                translations[language].heading;
+        return;
+    }
 
 
-            document.getElementById("description").innerText =
-                translations[language].description;
+    /*
+     * Other languages can be changed immediately.
+     */
+    localStorage.setItem("language", language);
+
+    applyLanguage(language);
+}
 
 
-            document.getElementById("search").innerText =
-                translations[language].search;
+function showMessage(message) {
+
+    const messageBox =
+        document.getElementById("languageMessage");
+
+    messageBox.innerText = message;
+
+    messageBox.style.display = "block";
+}
 
 
-            document.getElementById("login").innerText =
-                translations[language].login;
+function getCookie(name) {
 
+    let cookieValue = null;
 
-            document.getElementById("register").innerText =
-                translations[language].register;
-        }
+    if (document.cookie && document.cookie !== "") {
 
+        const cookies =
+            document.cookie.split(";");
 
-        window.onload = function() {
+        for (let i = 0; i < cookies.length; i++) {
 
-            const savedLanguage =
-                localStorage.getItem("language");
-
-
-            if (savedLanguage && savedLanguage !== "fr") {
-
-                document.getElementById("language").value =
-                    savedLanguage;
-
-                changeLanguage();
-            }
-
+            const cookie =
+                cookies[i].trim();
 
             if (
-                document.body.dataset.frenchVerified === "true"
+                cookie.substring(
+                    0,
+                    name.length + 1
+                ) === (name + "=")
             ) {
 
-                document.getElementById("language").value =
-                    "fr";
+                cookieValue =
+                    decodeURIComponent(
+                        cookie.substring(
+                            name.length + 1
+                        )
+                    );
 
-
-                document.getElementById("title").innerText =
-                    translations.fr.title;
-
-
-                document.getElementById("heading").innerText =
-                    translations.fr.heading;
-
-
-                document.getElementById("description").innerText =
-                    translations.fr.description;
-
-
-                document.getElementById("search").innerText =
-                    translations.fr.search;
-
-
-                document.getElementById("login").innerText =
-                    translations.fr.login;
-
-
-                document.getElementById("register").innerText =
-                    translations.fr.register;
-
-
-                localStorage.setItem(
-                    "language",
-                    "fr"
-                );
+                break;
             }
+        }
+    }
 
-        };
+    return cookieValue;
+}
 
-    </script>
+
+/*
+ * Load previously selected language.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+
+    const savedLanguage =
+        localStorage.getItem("language") || "en";
+
+    /*
+     * French should only be applied after
+     * successful OTP verification.
+     */
+    if (savedLanguage === "fr") {
+
+        localStorage.setItem("language", "en");
+
+        applyLanguage("en");
+
+    } else {
+
+        applyLanguage(savedLanguage);
+
+    }
+
+});
+
+</script>
 
 </body>
-
 </html>

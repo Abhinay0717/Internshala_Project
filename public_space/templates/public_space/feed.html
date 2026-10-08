@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Public Space</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 25px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            margin-left: 12px;
+            color: #2563eb;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 25px auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .message {
+            background: #e0f2fe;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .post {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .post-content {
+            font-size: 16px;
+            margin: 15px 0;
+            white-space: pre-wrap;
+        }
+
+        .post-media {
+            max-width: 100%;
+            max-height: 500px;
+            display: block;
+            margin: 10px auto;
+            border-radius: 8px;
+        }
+
+        .stats {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .actions {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn {
+            display: inline-block;
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .comment-box {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .comment {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: vertical;
+        }
+
+        button {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .empty {
+            text-align: center;
+            color: #64748b;
+            padding: 30px;
+        }
+
+        .mention-box {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f1f5f9;
+            border-radius: 6px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<div class="navbar">
+
+    <h2>🌐 Public Space</h2>
+
+    <div>
+
+        <a href="{% url 'public_space' %}">
+            Home
+        </a>
+
+        <a href="{% url 'create_post' %}">
+            Create Post
+        </a>
+
+        <a href="{% url 'users_list' %}">
+            Find Friends
+        </a>
+
+        <a href="{% url 'friend_requests' %}">
+            Friend Requests
+
+            {% if pending_friend_requests %}
+                ({{ pending_friend_requests }})
+            {% endif %}
+
+        </a>
+
+        <a href="{% url 'notifications' %}">
+            Notifications
+
+            {% if unread_notifications %}
+                ({{ unread_notifications }})
+            {% endif %}
+
+        </a>
+
+        <!-- LOGOUT SHOULD BE POST -->
+
+        <form method="post"
+              action="{% url 'logout_user' %}"
+              style="display:inline;">
+
+            {% csrf_token %}
+
+            <button type="submit"
+                    style="background:none;
+                           color:#2563eb;
+                           padding:0;
+                           margin-left:12px;
+                           border:none;
+                           cursor:pointer;
+                           font-size:inherit;">
+
+                Logout
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     DJANGO MESSAGES
+===================================================== -->
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div class="message">
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+<!-- =====================================================
+     USER INFORMATION
+===================================================== -->
+
+<div class="card">
+
+    <h2>
+        Public Space
+    </h2>
+
+    <p>
+        Welcome,
+        <strong>{{ request.user.username }}</strong>
+    </p>
+
+    <p>
+        Accepted Friends:
+        <strong>{{ friend_count }}</strong>
+    </p>
+
+    <p>
+        Posts Today:
+        <strong>{{ posts_today }}</strong>
+    </p>
+
+    <p>
+        Daily post limit:
+
+        {% if daily_post_limit is None %}
+
+            <strong>Unlimited</strong>
+
+        {% else %}
+
+            <strong>{{ daily_post_limit }}</strong>
+
+        {% endif %}
+
+    </p>
+
+</div>
+
+
+<!-- =====================================================
+     CREATE POST
+===================================================== -->
+
+<div class="card">
+
+    <h3>
+        Create a Post
+    </h3>
+
+    <p>
+        Share something with your friends
+        and the Public Space community.
+    </p>
+
+    <a class="btn"
+       href="{% url 'create_post' %}">
+
+        + Create Post
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     FEED
+===================================================== -->
+
+<div class="card">
+
+    <h2>
+        📰 Feed
+    </h2>
+
+
+    {% if posts %}
+
+
+        {% for post in posts %}
+
+
+        <div class="post">
+
+
+            <!-- POST HEADER -->
+
+            <div class="post-header">
+
+                <strong>
+                    {{ post.user.username }}
+                </strong>
+
+                <small>
+
+                    {{ post.created_at|date:"M. d, Y, g:i a" }}
+
+                </small>
+
+            </div>
+
+
+            <!-- POST CONTENT -->
+
+            {% if post.content %}
+
+                <div class="post-content">
+
+                    {{ post.content }}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- POST MEDIA -->
+
+            {% if post.media %}
+
+                {% if post.media_type == 'image' %}
+
+                    <img
+                        src="{{ post.media.url }}"
+                        class="post-media"
+                        alt="Post image"
+                    >
+
+                {% elif post.media_type == 'video' %}
+
+                    <video
+                        class="post-media"
+                        controls
+                    >
+
+                        <source
+                            src="{{ post.media.url }}"
+                        >
+
+                        Your browser does not support
+                        video playback.
+
+                    </video>
+
+                {% endif %}
+
+            {% endif %}
+
+
+            <!-- POST INFORMATION -->
+
+            <div class="stats">
+
+                ❤️ {{ post.likes.count }}
+
+                &nbsp;&nbsp;
+
+                💬 {{ post.comments.count }}
+
+                &nbsp;&nbsp;
+
+                🔄 {{ post.shares.count }}
+
+                &nbsp;&nbsp;
+
+                👁️ {{ post.view_count }}
+
+            </div>
+
+
+            <div class="stats">
+
+                Media:
+                {{ post.get_media_type_display }}
+
+                &nbsp;|&nbsp;
+
+                Privacy:
+                {{ post.get_privacy_display }}
+
+                &nbsp;|&nbsp;
+
+                Friends at posting:
+                {{ post.friend_count_at_post }}
+
+            </div>
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================= -->
+
+            <div class="actions">
+
+
+                <!-- LIKE -->
+
+                <form method="post"
+                      action="{% url 'like_post' post.id %}"
+                      style="display:inline;">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="btn">
+
+                        ❤️ Like / Unlike
+
+                    </button>
+
+                </form>
+
+
+                <!-- SHARE -->
+
+                <form method="post"
+                      action="{% url 'share_post' post.id %}"
+                      style="display:inline;">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="btn">
+
+                        🔄 Share
+
+                    </button>
+
+                </form>
+
+
+                <!-- SAVE -->
+
+                <form method="post"
+                      action="{% url 'save_post' post.id %}"
+                      style="display:inline;">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="btn">
+
+                        🔖 Save / Unsave
+
+                    </button>
+
+                </form>
+
+
+                <!-- VIEW -->
+
+                <a class="btn"
+                   href="{% url 'view_post' post.id %}">
+
+                    👁️ View
+
+                </a>
+
+
+                <!-- EDIT + DELETE -->
+
+                {% if post.user == request.user %}
+
+
+                    <a
+                        class="btn btn-secondary"
+                        href="{% url 'edit_post' post.id %}"
+                    >
+
+                        ✏️ Edit
+
+                    </a>
+
+
+                    <form
+                        method="post"
+                        action="{% url 'delete_post' post.id %}"
+                        style="display:inline;"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger"
+                        >
+
+                            🗑️ Delete
+
+                        </button>
+
+                    </form>
+
+
+                {% endif %}
+
+
+                <!-- REPORT -->
+
+                <form method="post"
+                      action="{% url 'report_post' post.id %}"
+                      style="display:inline;">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="btn btn-danger">
+
+                        🚩 Report
+
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 MENTIONED USERS
+            ================================================= -->
+
+            {% with mentions=post.mentions.all %}
+
+                {% if mentions %}
+
+                    <div class="mention-box">
+
+                        <strong>
+                            Mentioned users:
+                        </strong>
+
+                        {% for mention in mentions %}
+
+                            {% if mention.user %}
+
+                                @{{ mention.user.username }}
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- =================================================
+                 COMMENTS
+            ================================================= -->
+
+            <div class="comment-box">
+
+                <h4>
+                    💬 Comments
+                </h4>
+
+
+                {% for comment in post.comments.all %}
+
+                    <div class="comment">
+
+                        <strong>
+                            {{ comment.user.username }}
+                        </strong>
+
+                        <br>
+
+                        {{ comment.text }}
+
+                        <br>
+
+                        <small>
+
+                            {{ comment.created_at|date:"M. d, Y, g:i a" }}
+
+                        </small>
+
+                    </div>
+
+
+                {% empty %}
+
+                    <p>
+                        No comments yet.
+                    </p>
+
+                {% endfor %}
+
+
+                <!-- ADD COMMENT -->
+
+                <form
+                    method="post"
+                    action="{% url 'add_comment' post.id %}"
+                    style="margin-top:15px;"
+                >
+
+                    {% csrf_token %}
+
+                    {{ comment_form.text }}
+
+                    <br>
+                    <br>
+
+                    <button type="submit">
+                        💬 Comment
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+        {% endfor %}
+
+
+    {% else %}
+
+
+        <div class="empty">
+
+            <h3>
+                No posts available.
+            </h3>
+
+            <p>
+                Create your first post to get started.
+            </p>
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- =====================================================
+     TRENDING POSTS
+===================================================== -->
+
+<div class="card">
+
+    <h2>
+        🔥 Trending Posts
+    </h2>
+
+
+    {% for post in trending_posts %}
+
+
+        <div class="post">
+
+            <strong>
+                {{ post.user.username }}
+            </strong>
+
+            <p>
+
+                {{ post.content|truncatechars:120 }}
+
+            </p>
+
+            <div class="stats">
+
+                ❤️ {{ post.total_likes }}
+
+                &nbsp;&nbsp;
+
+                💬 {{ post.total_comments }}
+
+                &nbsp;&nbsp;
+
+                🔄 {{ post.total_shares }}
+
+            </div>
+
+            <br>
+
+            <a
+                class="btn"
+                href="{% url 'view_post' post.id %}"
+            >
+
+                View Post
+
+            </a>
+
+        </div>
+
+
+    {% empty %}
+
+        <p>
+            No trending posts yet.
+        </p>
+
+    {% endfor %}
+
+
+</div>
+
+
+</div>
+
+</body>
+
+</html>

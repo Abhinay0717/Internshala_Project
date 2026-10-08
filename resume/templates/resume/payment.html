@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Resume Payment</title>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .box {
+            background: white;
+            max-width: 500px;
+            margin: auto;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 15px;
+        }
+
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 25px 0;
+        }
+
+        .info {
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        button {
+            padding: 14px 30px;
+            font-size: 16px;
+            background: #222;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>Resume Payment 💳</h1>
+
+    <p class="info">
+        OTP verified successfully.
+    </p>
+
+    <p class="info">
+        You are ready to continue with payment.
+    </p>
+
+    <div class="amount">
+        Resume Generation Fee: ₹50
+    </div>
+
+    <button id="pay-button" type="button">
+        Continue to Razorpay
+    </button>
+
+</div>
+
+<script>
+
+    const options = {
+
+        key: "{{ razorpay_key_id }}",
+
+        amount: "{{ amount }}",
+
+        currency: "INR",
+
+        name: "Internship Portal",
+
+        description: "Premium Resume Builder",
+
+        order_id: "{{ order.id }}",
+
+        handler: function (response) {
+
+            const url =
+                "{% url 'payment_success' %}" +
+                "?payment_id=" +
+                encodeURIComponent(response.razorpay_payment_id) +
+                "&order_id=" +
+                encodeURIComponent(response.razorpay_order_id) +
+                "&signature=" +
+                encodeURIComponent(response.razorpay_signature);
+
+            window.location.href = url;
+        },
+
+        prefill: {
+            name: "{{ resume.full_name|escapejs }}",
+            email: "{{ resume.email|escapejs }}"
+        },
+
+        theme: {
+            color: "#222222"
+        }
+    };
+
+
+    const razorpay = new Razorpay(options);
+
+
+    razorpay.on(
+        "payment.failed",
+        function (response) {
+
+            alert(
+                "Payment failed. Please try again."
+            );
+
+        }
+    );
+
+
+    document.getElementById("pay-button").onclick = function (event) {
+
+        event.preventDefault();
+
+        razorpay.open();
+
+    };
+
+</script>
+
+</body>
+
+</html>

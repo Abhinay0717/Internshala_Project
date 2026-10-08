@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Find Friends & Users</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .user-box {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 9px 13px;
+            margin-top: 10px;
+            margin-right: 5px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .friend {
+            background: #28a745;
+        }
+
+        .follow {
+            background: #6f42c1;
+        }
+
+        .back {
+            background: #6c757d;
+        }
+
+        .pending {
+            background: #ffc107;
+            color: black;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>
+        Find Friends & Users
+    </h1>
+
+    <p>
+        Welcome,
+        <strong>{{ request.user.username }}</strong>
+    </p>
+
+    <a
+        href="{% url 'public_space' %}"
+        class="button back"
+    >
+        ← Back to Public Space
+    </a>
+
+    <a
+        href="{% url 'friend_requests' %}"
+        class="button"
+    >
+        Friend Requests
+    </a>
+
+    <br><br>
+
+
+    {% for item in user_data %}
+
+        <div class="user-box">
+
+            <h2>
+                {{ item.user.username }}
+            </h2>
+
+            <p>
+                Followers:
+                <strong>
+                    {{ item.followers_count }}
+                </strong>
+
+                &nbsp;&nbsp;
+
+                Following:
+                <strong>
+                    {{ item.following_count }}
+                </strong>
+            </p>
+
+
+            <!-- FRIEND REQUEST -->
+
+            {% if item.is_friend %}
+
+                <span class="button friend">
+                    ✓ Friends
+                </span>
+
+            {% elif item.pending_request %}
+
+                <span class="button pending">
+                    Friend Request Sent
+                </span>
+
+            {% else %}
+
+                <form
+                    method="post"
+                    action="{% url 'send_friend_request' item.user.id %}"
+                    style="display:inline;"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="button"
+                    >
+                        👥 Send Friend Request
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+            <!-- FOLLOW -->
+
+            {% if item.already_following %}
+
+                <form
+                    method="post"
+                    action="{% url 'follow_user' item.user.id %}"
+                    style="display:inline;"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="button follow"
+                    >
+                        ✓ Unfollow
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <form
+                    method="post"
+                    action="{% url 'follow_user' item.user.id %}"
+                    style="display:inline;"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="button follow"
+                    >
+                        + Follow
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+
+    {% empty %}
+
+        <p>
+            No other users found.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+</body>
+
+</html>

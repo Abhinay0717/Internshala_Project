@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Active Sessions</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .session-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .current {
+            border: 2px solid #28a745;
+        }
+
+        .session-card p {
+            margin: 8px 0;
+        }
+
+        .current-label {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .logout-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #c82333;
+        }
+
+        .empty {
+            background: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Active Sessions</h1>
+
+    {% if sessions %}
+
+        {% for session in sessions %}
+
+            <div class="session-card
+                {% if session.session_key == current_session_key %}
+                    current
+                {% endif %}
+            ">
+
+                {% if session.session_key == current_session_key %}
+                    <p class="current-label">
+                        ✓ This is your current session
+                    </p>
+                {% endif %}
+
+                <p>
+                    <strong>Browser:</strong>
+                    {{ session.browser_name }}
+                    {{ session.browser_version }}
+                </p>
+
+                <p>
+                    <strong>Operating System:</strong>
+                    {{ session.operating_system }}
+                </p>
+
+                <p>
+                    <strong>Device Type:</strong>
+                    {{ session.device_type }}
+                </p>
+
+                <p>
+                    <strong>Device Model:</strong>
+                    {{ session.device_model|default:"Unknown" }}
+                </p>
+
+                <p>
+                    <strong>IP Address:</strong>
+                    {{ session.ip_address }}
+                </p>
+
+                <p>
+                    <strong>Login Time:</strong>
+                    {{ session.login_time }}
+                </p>
+
+                <p>
+                    <strong>Last Activity:</strong>
+                    {{ session.last_activity }}
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+        {% if sessions|length > 1 %}
+            <form method="post"
+                  action="{% url 'logout_other_devices' %}">
+
+                {% csrf_token %}
+
+                <button type="submit" class="logout-button">
+                    Sign Out Other Devices
+                </button>
+
+            </form>
+        {% endif %}
+
+    {% else %}
+
+        <div class="empty">
+            <p>No active sessions found.</p>
+        </div>
+
+    {% endif %}
+
+    <br>
+
+    <a href="{% url 'home' %}">← Back to Home</a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Premium Resume Builder</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .premium {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .builder-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .form-section,
+        .preview-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .preview-section {
+            position: sticky;
+            top: 20px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 11px;
+            margin-top: 5px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            background: #222;
+            color: white;
+            margin-top: 10px;
+        }
+
+        #resume-preview {
+            background: white;
+            padding: 35px;
+            min-height: 750px;
+            border: 1px solid #ccc;
+        }
+
+        #resume-preview h1 {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        #preview-contact {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #resume-preview h3 {
+            margin-top: 22px;
+            padding-bottom: 5px;
+        }
+
+        #resume-preview p {
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+
+        /* PROFILE PHOTO */
+
+        #preview-photo {
+            display: none;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 2px solid #333;
+        }
+
+        /* TEMPLATE 1 - CLASSIC */
+
+        .template-classic {
+            border-top: 10px solid #222 !important;
+        }
+
+        .template-classic h3 {
+            border-bottom: 2px solid #222;
+        }
+
+
+        /* TEMPLATE 2 - MODERN */
+
+        .template-modern {
+            border-left: 15px solid #444 !important;
+            border-top: 2px solid #444 !important;
+        }
+
+        .template-modern h1 {
+            text-align: left;
+        }
+
+        .template-modern #preview-contact {
+            text-align: left;
+        }
+
+        .template-modern h3 {
+            border-left: 6px solid #444;
+            padding-left: 10px;
+        }
+
+        .template-modern #preview-photo {
+            margin-left: 0;
+        }
+
+
+        /* TEMPLATE 3 - PROFESSIONAL */
+
+        .template-professional {
+            border-top: 5px solid #111 !important;
+            border-bottom: 5px solid #111 !important;
+        }
+
+        .template-professional h1 {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .template-professional h3 {
+            border-bottom: 1px solid #111;
+            text-transform: uppercase;
+        }
+
+
+        /* MOBILE */
+
+        @media (max-width: 900px) {
+
+            .builder-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-section {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>Premium Resume Builder</h1>
+
+    <p class="premium">
+        Create your professional ATS-friendly resume
+    </p>
+
+
+    <div class="builder-layout">
+
+
+        <!-- FORM SECTION -->
+
+        <div class="form-section">
+
+            <h2>Enter Your Details</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit">
+                    Save Resume
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- PREVIEW SECTION -->
+
+        <div class="preview-section">
+
+            <h2>Resume Preview</h2>
+
+            <div id="resume-preview" class="template-classic">
+
+
+                <!-- PROFILE PHOTO -->
+
+                <img id="preview-photo"
+                     src=""
+                     alt="Profile Photo">
+
+
+                <!-- NAME -->
+
+                <h1 id="preview-name">
+                    Your Name
+                </h1>
+
+
+                <!-- CONTACT -->
+
+                <p id="preview-contact">
+                    Email | Phone
+                </p>
+
+                <hr>
+
+
+                <!-- CAREER OBJECTIVE -->
+
+                <h3>
+                    Career Objective
+                </h3>
+
+                <p id="preview-objective">
+                    Your career objective will appear here.
+                </p>
+
+
+                <!-- EDUCATION -->
+
+                <h3>
+                    Education
+                </h3>
+
+                <p id="preview-education">
+                    Your education will appear here.
+                </p>
+
+
+                <!-- SKILLS -->
+
+                <h3>
+                    Skills
+                </h3>
+
+                <p id="preview-skills">
+                    Your skills will appear here.
+                </p>
+
+
+                <!-- WORK EXPERIENCE -->
+
+                <h3>
+                    Work Experience
+                </h3>
+
+                <p id="preview-experience">
+                    Your work experience will appear here.
+                </p>
+
+
+                <!-- INTERNSHIPS -->
+
+                <h3>
+                    Internships
+                </h3>
+
+                <p id="preview-internships">
+                    Your internships will appear here.
+                </p>
+
+
+                <!-- PROJECTS -->
+
+                <h3>
+                    Projects
+                </h3>
+
+                <p id="preview-projects">
+                    Your projects will appear here.
+                </p>
+
+
+                <!-- CERTIFICATIONS -->
+
+                <h3>
+                    Certifications
+                </h3>
+
+                <p id="preview-certifications">
+                    Your certifications will appear here.
+                </p>
+
+
+                <!-- ACHIEVEMENTS -->
+
+                <h3>
+                    Achievements
+                </h3>
+
+                <p id="preview-achievements">
+                    Your achievements will appear here.
+                </p>
+
+
+                <!-- LANGUAGES -->
+
+                <h3>
+                    Languages
+                </h3>
+
+                <p id="preview-languages">
+                    Your languages will appear here.
+                </p>
+
+
+                <!-- SOCIAL LINKS -->
+
+                <h3>
+                    Social Links
+                </h3>
+
+                <p id="preview-social">
+                    Your social links will appear here.
+                </p>
+
+
+                <!-- REFERENCES -->
+
+                <h3>
+                    References
+                </h3>
+
+                <p id="preview-references">
+                    Your references will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =========================================
+   UPDATE COMPLETE RESUME PREVIEW
+========================================= */
+
+function updatePreview() {
+
+
+    /* NAME */
+
+    const name =
+        document.getElementById("id_full_name");
+
+    if (name) {
+
+        document.getElementById("preview-name").innerText =
+            name.value || "Your Name";
+
+    }
+
+
+    /* EMAIL */
+
+    const email =
+        document.getElementById("id_email");
+
+
+    /* PHONE */
+
+    const phone =
+        document.getElementById("id_phone");
+
+
+    document.getElementById("preview-contact").innerText =
+
+        (email && email.value
+            ? email.value
+            : "Email")
+
+        +
+
+        " | "
+
+        +
+
+        (phone && phone.value
+            ? phone.value
+            : "Phone");
+
+
+    /* TEXT FIELDS */
+
+    updateText(
+        "career_objective",
+        "preview-objective",
+        "Your career objective will appear here."
+    );
+
+
+    updateText(
+        "education",
+        "preview-education",
+        "Your education will appear here."
+    );
+
+
+    updateText(
+        "skills",
+        "preview-skills",
+        "Your skills will appear here."
+    );
+
+
+    updateText(
+        "work_experience",
+        "preview-experience",
+        "Your work experience will appear here."
+    );
+
+
+    updateText(
+        "internships",
+        "preview-internships",
+        "Your internships will appear here."
+    );
+
+
+    updateText(
+        "projects",
+        "preview-projects",
+        "Your projects will appear here."
+    );
+
+
+    updateText(
+        "certifications",
+        "preview-certifications",
+        "Your certifications will appear here."
+    );
+
+
+    updateText(
+        "achievements",
+        "preview-achievements",
+        "Your achievements will appear here."
+    );
+
+
+    updateText(
+        "languages",
+        "preview-languages",
+        "Your languages will appear here."
+    );
+
+
+    updateText(
+        "social_links",
+        "preview-social",
+        "Your social links will appear here."
+    );
+
+
+    updateText(
+        "references",
+        "preview-references",
+        "Your references will appear here."
+    );
+
+
+    /* =========================================
+       FONT
+    ========================================= */
+
+    const fontElement =
+        document.getElementById("id_font");
+
+
+    if (fontElement) {
+
+        document.getElementById(
+            "resume-preview"
+        ).style.fontFamily =
+            fontElement.value;
+
+    }
+
+
+    /* =========================================
+       COLOR
+    ========================================= */
+
+    const colorElement =
+        document.getElementById("id_color");
+
+
+    if (colorElement) {
+
+        document.getElementById(
+            "resume-preview"
+        ).style.color =
+            colorElement.value;
+
+    }
+
+
+    /* =========================================
+       TEMPLATE
+    ========================================= */
+
+    const templateElement =
+        document.getElementById("id_template");
+
+
+    const preview =
+        document.getElementById("resume-preview");
+
+
+    if (templateElement) {
+
+        const selectedTemplate =
+            templateElement.value;
+
+
+        preview.classList.remove(
+            "template-classic",
+            "template-modern",
+            "template-professional"
+        );
+
+
+        if (
+            selectedTemplate ===
+            "template1"
+        ) {
+
+            preview.classList.add(
+                "template-classic"
+            );
+
+        }
+
+
+        else if (
+            selectedTemplate ===
+            "template2"
+        ) {
+
+            preview.classList.add(
+                "template-modern"
+            );
+
+        }
+
+
+        else if (
+            selectedTemplate ===
+            "template3"
+        ) {
+
+            preview.classList.add(
+                "template-professional"
+            );
+
+        }
+
+    }
+
+
+    /* =========================================
+       PROFILE PHOTO
+    ========================================= */
+
+    updateProfilePhoto();
+
+}
+
+
+
+/* =========================================
+   UPDATE TEXT
+========================================= */
+
+function updateText(
+    fieldName,
+    previewId,
+    defaultText
+) {
+
+
+    const field =
+        document.getElementById(
+            "id_" + fieldName
+        );
+
+
+    const preview =
+        document.getElementById(
+            previewId
+        );
+
+
+    if (field && preview) {
+
+        preview.innerText =
+            field.value || defaultText;
+
+    }
+
+}
+
+
+
+/* =========================================
+   PROFILE PHOTO PREVIEW
+========================================= */
+
+function updateProfilePhoto() {
+
+
+    const photoInput =
+        document.getElementById(
+            "id_profile_photo"
+        );
+
+
+    const previewPhoto =
+        document.getElementById(
+            "preview-photo"
+        );
+
+
+    if (
+        !photoInput ||
+        !previewPhoto
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        photoInput.files &&
+        photoInput.files.length > 0
+    ) {
+
+
+        const file =
+            photoInput.files[0];
+
+
+        if (
+            file.type.startsWith(
+                "image/"
+            )
+        ) {
+
+
+            const imageURL =
+                URL.createObjectURL(
+                    file
+                );
+
+
+            previewPhoto.src =
+                imageURL;
+
+
+            previewPhoto.style.display =
+                "block";
+
+        }
+
+    }
+
+}
+
+
+
+/* =========================================
+   LISTEN FOR INPUT CHANGES
+========================================= */
+
+document.querySelectorAll(
+    "input, textarea, select"
+).forEach(
+    function(element) {
+
+
+        element.addEventListener(
+            "input",
+            updatePreview
+        );
+
+
+        element.addEventListener(
+            "change",
+            updatePreview
+        );
+
+    }
+);
+
+
+
+/* =========================================
+   INITIAL PREVIEW
+========================================= */
+
+updatePreview();
+
+
+</script>
+
+</body>
+</html>

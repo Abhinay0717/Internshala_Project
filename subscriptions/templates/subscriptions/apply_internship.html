@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Apply for Internship</title>
+</head>
+
+<body>
+
+    <h1>Apply for Internship</h1>
+
+    <p>
+        <strong>Current Plan:</strong>
+        {{ subscription.plan.get_name_display }}
+    </p>
+
+    {% if subscription.monthly_application_limit %}
+        <p>
+            <strong>Applications Remaining:</strong>
+            {{ subscription.remaining_applications }}
+        </p>
+    {% else %}
+        <p>
+            <strong>Applications Remaining:</strong>
+            Unlimited
+        </p>
+    {% endif %}
+
+    <hr>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <p>
+            <label>
+                Internship Title:
+            </label>
+            <br>
+
+            <input
+                type="text"
+                name="internship_title"
+                required
+            >
+        </p>
+
+        <p>
+            <label>
+                Company Name:
+            </label>
+            <br>
+
+            <input
+                type="text"
+                name="company_name"
+                required
+            >
+        </p>
+
+        <button type="submit">
+            Apply Now
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="{% url 'subscription_dashboard' %}">
+        ← Back to Subscription Dashboard
+    </a>
+
+</body>
+
+</html>

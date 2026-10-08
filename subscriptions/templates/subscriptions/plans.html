@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subscription Plans</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .plans-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .plan-card {
+            background: white;
+            width: 230px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .plan-card h2 {
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .limit {
+            margin: 15px 0;
+        }
+
+        .subscribe-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .subscribe-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Choose Your Internship Plan</h1>
+
+    <div class="plans-container">
+
+        {% for plan in plans %}
+
+        <div class="plan-card">
+
+            <h2>{{ plan.get_name_display }}</h2>
+
+            <div class="price">
+                ₹{{ plan.price }}/month
+            </div>
+
+            <div class="limit">
+
+                {% if plan.monthly_application_limit %}
+                    {{ plan.monthly_application_limit }}
+                    internship applications/month
+                {% else %}
+                    Unlimited internship applications
+                {% endif %}
+
+            </div>
+
+            <p>
+                {{ plan.description }}
+            </p>
+
+            <a
+    href="{% url 'select_plan' plan.id %}"
+    class="subscribe-btn"
+>
+    Select Plan
+</a>
+
+        </div>
+
+        {% empty %}
+
+        <h2>No subscription plans found.</h2>
+
+        {% endfor %}
+
+    </div>
+
+</body>
+</html>

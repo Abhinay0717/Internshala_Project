@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Notifications</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .date {
+            color: #777;
+            font-size: 13px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>
+        Notifications
+    </h1>
+
+
+    {% for notification in notifications %}
+
+        <div class="box">
+
+            <strong>
+                {{ notification.sender.username }}
+            </strong>
+
+            <p>
+                {{ notification.message }}
+            </p>
+
+            <div class="date">
+                {{ notification.created_at }}
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <div class="box">
+
+            <p>
+                No notifications yet.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+
+    <br>
+
+    <a
+        href="{% url 'public_space' %}"
+        class="button"
+    >
+        ← Back to Public Space
+    </a>
+
+</div>
+
+</body>
+
+</html>

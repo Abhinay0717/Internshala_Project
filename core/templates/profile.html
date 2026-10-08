@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>My Profile</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .failed {
+            color: red;
+        }
+
+        .blocked {
+            color: orange;
+        }
+
+        .subscription-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .subscription-box p {
+            margin: 10px 0;
+        }
+
+        .subscription-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .subscription-link:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>My Profile</h1>
+
+    <hr>
+
+    <h2>Account Information</h2>
+
+    <p>
+        <strong>Username:</strong>
+        {{ user.username }}
+    </p>
+
+    <p>
+        <strong>Email:</strong>
+        {{ user.email }}
+    </p>
+
+    <hr>
+
+    <h2>Login History</h2>
+
+    {% if history %}
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Date & Time</th>
+                <th>Status</th>
+                <th>Browser</th>
+                <th>Operating System</th>
+                <th>Device</th>
+                <th>IP Address</th>
+                <th>Location</th>
+                <th>OTP</th>
+                <th>Trusted Device</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for item in history %}
+
+            <tr>
+
+                <td>
+                    {{ item.login_time|date:"d M Y, h:i A" }}
+                </td>
+
+                <td>
+                    {{ item.get_status_display }}
+                </td>
+
+                <td>
+                    {{ item.browser_name }}
+                    {{ item.browser_version }}
+                </td>
+
+                <td>
+                    {{ item.operating_system }}
+                </td>
+
+                <td>
+                    {{ item.device_type }}
+
+                    {% if item.device_model %}
+                        ({{ item.device_model }})
+                    {% endif %}
+
+                </td>
+
+                <td>
+                    {{ item.ip_address }}
+                </td>
+
+                <td>
+                    {{ item.approximate_location }}
+                </td>
+
+                <td>
+
+                    {% if item.otp_required %}
+
+                        {% if item.otp_verified %}
+                            Verified
+                        {% else %}
+                            Required
+                        {% endif %}
+
+                    {% else %}
+
+                        Not Required
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    {% if item.is_trusted_device %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% else %}
+
+        <p>No login history available.</p>
+
+    {% endif %}
+
+
+    <!-- ============================= -->
+    <!-- SUBSCRIPTION INFORMATION -->
+    <!-- ============================= -->
+
+    <hr>
+
+    <h2>Subscription Information</h2>
+
+    <div class="subscription-box">
+
+        {% if subscription %}
+
+            <p>
+                <strong>Current Plan:</strong>
+                {{ subscription.plan.get_name_display }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ subscription.status|title }}
+            </p>
+
+            <p>
+                <strong>Start Date:</strong>
+                {{ subscription.start_date|date:"d M Y, h:i A" }}
+            </p>
+
+            <p>
+                <strong>Renewal / Expiry Date:</strong>
+                {{ subscription.end_date|date:"d M Y, h:i A" }}
+            </p>
+
+            <p>
+                <strong>Applications Used:</strong>
+                {{ subscription.applications_used }}
+            </p>
+
+            {% if subscription.monthly_application_limit %}
+
+                <p>
+                    <strong>Applications Remaining:</strong>
+                    {{ subscription.remaining_applications }}
+                </p>
+
+            {% else %}
+
+                <p>
+                    <strong>Applications Remaining:</strong>
+                    Unlimited
+                </p>
+
+            {% endif %}
+
+            <p>
+                <a
+                    class="subscription-link"
+                    href="{% url 'subscription_dashboard' %}"
+                >
+                    View Subscription Dashboard
+                </a>
+            </p>
+
+        {% else %}
+
+            <p>
+                <strong>Current Plan:</strong>
+                No Active Subscription
+            </p>
+
+            <p>
+                You do not currently have an active subscription.
+            </p>
+
+            <p>
+                <a
+                    class="subscription-link"
+                    href="{% url 'subscription_plans' %}"
+                >
+                    View Subscription Plans
+                </a>
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- SECURITY -->
+    <!-- ============================= -->
+
+    <hr>
+
+    <h2>Security</h2>
+
+    <p>
+        <a href="{% url 'login_history' %}">
+            Open Full Login History
+        </a>
+    </p>
+
+    <p>
+        <a href="{% url 'active_sessions' %}">
+            Active Sessions
+        </a>
+    </p>
+
+    <hr>
+
+    <a href="{% url 'home' %}">
+        Back to Home
+    </a>
+
+</body>
+
+</html>

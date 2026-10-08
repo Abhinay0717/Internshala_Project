@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Razorpay Payment</title>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Complete Your Payment</h1>
+
+    <h2>
+        {{ plan.get_name_display }} Plan
+    </h2>
+
+    <p>
+        Amount:
+        <strong>₹{{ plan.price }}</strong>
+    </p>
+
+    <p>
+        Applications:
+
+        {% if plan.monthly_application_limit %}
+
+            {{ plan.monthly_application_limit }}
+            per month
+
+        {% else %}
+
+            Unlimited
+
+        {% endif %}
+
+    </p>
+
+
+    <button id="pay-button">
+        Pay ₹{{ plan.price }}
+    </button>
+
+    <br>
+    <br>
+
+    <a href="{% url 'subscription_plans' %}">
+        ← Back to Plans
+    </a>
+
+
+    <!-- ============================= -->
+    <!-- SUCCESS PAYMENT FORM -->
+    <!-- ============================= -->
+
+    <form
+        id="success-form"
+        method="POST"
+        action="{% url 'verify_payment' %}"
+        style="display:none;"
+    >
+
+        {% csrf_token %}
+
+        <input
+            type="hidden"
+            name="razorpay_payment_id"
+            id="razorpay_payment_id"
+        >
+
+        <input
+            type="hidden"
+            name="razorpay_order_id"
+            id="razorpay_order_id"
+        >
+
+        <input
+            type="hidden"
+            name="razorpay_signature"
+            id="razorpay_signature"
+        >
+
+    </form>
+
+
+    <!-- ============================= -->
+    <!-- FAILED / CANCELLED FORM -->
+    <!-- ============================= -->
+
+    <form
+        id="failure-form"
+        method="POST"
+        action="{% url 'payment_failed' %}"
+        style="display:none;"
+    >
+
+        {% csrf_token %}
+
+        <input
+            type="hidden"
+            name="razorpay_order_id"
+            id="failure_order_id"
+            value="{{ razorpay_order_id }}"
+        >
+
+        <input
+            type="hidden"
+            name="razorpay_payment_id"
+            id="failure_payment_id"
+        >
+
+        <input
+            type="hidden"
+            name="reason"
+            id="failure_reason"
+        >
+
+    </form>
+
+
+    <script>
+
+        /*
+         * This flag prevents the same payment from being
+         * recorded as failed/cancelled after success.
+         */
+
+        var paymentCompleted = false;
+
+        var failureHandled = false;
+
+
+        /*
+         * Submit payment failure/cancellation
+         */
+
+        function submitPaymentFailure(reason, paymentId) {
+
+            if (paymentCompleted || failureHandled) {
+
+                return;
+
+            }
+
+            failureHandled = true;
+
+
+            document.getElementById(
+                "failure_payment_id"
+            ).value = paymentId || "";
+
+
+            document.getElementById(
+                "failure_reason"
+            ).value = reason || "Payment failed.";
+
+
+            document.getElementById(
+                "failure-form"
+            ).submit();
+
+        }
+
+
+        /*
+         * Razorpay configuration
+         */
+
+        var options = {
+
+            "key": "{{ razorpay_key_id }}",
+
+            "amount": "{{ amount }}",
+
+            "currency": "INR",
+
+            "name": "Internshala Internship Portal",
+
+            "description":
+                "{{ plan.get_name_display }} Subscription",
+
+            "order_id":
+                "{{ razorpay_order_id }}",
+
+
+            /*
+             * PAYMENT SUCCESS
+             */
+
+            "handler": function (response) {
+
+                paymentCompleted = true;
+
+
+                document.getElementById(
+                    "razorpay_payment_id"
+                ).value =
+                    response.razorpay_payment_id;
+
+
+                document.getElementById(
+                    "razorpay_order_id"
+                ).value =
+                    response.razorpay_order_id;
+
+
+                document.getElementById(
+                    "razorpay_signature"
+                ).value =
+                    response.razorpay_signature;
+
+
+                document.getElementById(
+                    "success-form"
+                ).submit();
+
+            },
+
+
+            /*
+             * PAYMENT WINDOW CLOSED
+             */
+
+            "modal": {
+
+                "ondismiss": function () {
+
+                    if (
+                        !paymentCompleted &&
+                        !failureHandled
+                    ) {
+
+                        submitPaymentFailure(
+                            "Payment window was closed by the user.",
+                            ""
+                        );
+
+                    }
+
+                }
+
+            },
+
+
+            "theme": {
+
+                "color": "#3399cc"
+
+            }
+
+        };
+
+
+        /*
+         * Create Razorpay checkout
+         */
+
+        var rzp =
+            new Razorpay(options);
+
+
+        /*
+         * PAYMENT FAILED
+         */
+
+        rzp.on(
+            "payment.failed",
+            function (response) {
+
+                paymentCompleted = false;
+
+
+                var description =
+                    "Payment failed.";
+
+
+                if (
+                    response &&
+                    response.error &&
+                    response.error.description
+                ) {
+
+                    description =
+                        response.error.description;
+
+                }
+
+
+                var paymentId = "";
+
+
+                if (
+                    response &&
+                    response.error &&
+                    response.error.metadata &&
+                    response.error.metadata.payment_id
+                ) {
+
+                    paymentId =
+                        response.error.metadata.payment_id;
+
+                }
+
+
+                submitPaymentFailure(
+                    description,
+                    paymentId
+                );
+
+            }
+        );
+
+
+        /*
+         * PAY BUTTON
+         */
+
+        document.getElementById(
+            "pay-button"
+        ).onclick = function (e) {
+
+            e.preventDefault();
+
+            rzp.open();
+
+        };
+
+    </script>
+
+</body>
+
+</html>

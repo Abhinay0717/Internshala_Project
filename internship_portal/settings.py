@@ -12,23 +12,36 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
+# =========================================================
+# BASE DIRECTORY
+# =========================================================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
+# =========================================================
+# SECURITY
+# =========================================================
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-njo5q_j-=ldg_3f0c4pvq-bem03gxa9ooh1k_*x=jgtxcce2a6'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
 
 
-# Application definition
+# =========================================================
+# APPLICATIONS
+# =========================================================
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,71 +50,122 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'core',
+    'resume',
+    'public_space',
+    'subscriptions',
 ]
+
+
+# =========================================================
+# MIDDLEWARE
+# =========================================================
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
+
     'django.middleware.common.CommonMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
+
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+# =========================================================
+# URL CONFIGURATION
+# =========================================================
+
 ROOT_URLCONF = 'internship_portal.urls'
+
+
+# =========================================================
+# TEMPLATES
+# =========================================================
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'core' / 'templates'],
+        'BACKEND':
+            'django.template.backends.django.DjangoTemplates',
+
+        'DIRS': [
+            BASE_DIR / 'core' / 'templates'
+        ],
+
         'APP_DIRS': True,
+
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
+
                 'django.contrib.auth.context_processors.auth',
+
                 'django.contrib.messages.context_processors.messages',
             ],
         },
     },
 ]
 
+
+# =========================================================
+# WSGI
+# =========================================================
+
 WSGI_APPLICATION = 'internship_portal.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+# =========================================================
+# DATABASE
+# =========================================================
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE':
+            'django.db.backends.sqlite3',
+
+        'NAME':
+            BASE_DIR / 'db.sqlite3',
     }
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
+# =========================================================
+# PASSWORD VALIDATION
+# =========================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
+
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
+
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
+
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.1/topics/i18n/
+# =========================================================
+# INTERNATIONALIZATION
+# =========================================================
 
 LANGUAGE_CODE = 'en-us'
 
@@ -112,13 +176,42 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.1/howto/static-files/
+# =========================================================
+# STATIC FILES
+# =========================================================
 
 STATIC_URL = 'static/'
 
 
-# Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
+# =========================================================
+# EMAIL
+# =========================================================
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = (
+    'django.core.mail.backends.console.EmailBackend'
+)
+
+DEFAULT_FROM_EMAIL = (
+    'noreply@internshipportal.com'
+)
+
+
+# =========================================================
+# RAZORPAY
+# =========================================================
+
+RAZORPAY_KEY_ID = (
+    'rzp_test_Td0jVigRi26uSA'
+)
+
+RAZORPAY_KEY_SECRET = (
+    '5RtGJQA4U5j0m5VmYuEfN22X'
+)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+LOGIN_URL = '/login/'
+
+# Subscription payment testing
+# True = allow Razorpay Test Mode at any time during development
+# False = enforce the real 5:00 AM to 11:45 AM IST restriction
+ALLOW_SUBSCRIPTION_PAYMENT_ANYTIME = False

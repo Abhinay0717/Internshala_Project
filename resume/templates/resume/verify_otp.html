@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Verify OTP</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            text-align: center;
+            padding: 80px;
+        }
+
+        .box {
+            background: white;
+            max-width: 450px;
+            margin: auto;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        input {
+            padding: 12px;
+            width: 80%;
+            margin: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #222;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .error {
+            color: red;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>Verify OTP 🔐</h1>
+
+    <p>
+        A 6-digit OTP has been sent to your
+        registered email address.
+    </p>
+
+    {% if error %}
+
+        <p class="error">
+            {{ error }}
+        </p>
+
+    {% endif %}
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.otp }}
+
+        <br>
+
+        <button type="submit">
+            Verify OTP
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

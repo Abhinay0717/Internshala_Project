@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login History</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .description {
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .back-button:hover {
+            background: #555;
+        }
+
+        .info-box {
+            background: #f7f9fb;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f0f2f5;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .failed {
+            color: red;
+        }
+
+        .blocked {
+            color: darkred;
+        }
+
+        .otp-required {
+            color: #c47a00;
+        }
+
+        .otp-failed {
+            color: red;
+        }
+
+        .yes {
+            color: green;
+            font-weight: bold;
+        }
+
+        .no {
+            color: #777;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+            font-size: 16px;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                width: 98%;
+                padding: 15px;
+                margin: 10px auto;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div>
+            <h1>🔐 Login History</h1>
+
+            <p class="description">
+                View your recent login activity,
+                device information and verification status.
+            </p>
+        </div>
+
+        <a href="{% url 'public_space' %}"
+           class="back-button">
+            ← Back to Public Space
+        </a>
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>Security information:</strong>
+
+        Your login activity records include
+        browser, operating system, device,
+        IP address, login time and verification status.
+
+    </div>
+
+
+    {% if history %}
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Browser</th>
+                    <th>Browser Version</th>
+                    <th>Operating System</th>
+                    <th>Device Type</th>
+                    <th>Device Model</th>
+                    <th>IP Address</th>
+                    <th>Location</th>
+                    <th>OTP</th>
+                    <th>New Browser</th>
+                    <th>New Device</th>
+                    <th>New IP</th>
+                    <th>Trusted</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in history %}
+
+                <tr>
+
+                    <td>
+                        {{ item.login_time|date:"d M Y, h:i A" }}
+                    </td>
+
+
+                    <td>
+
+                        {% if item.status == 'success' %}
+                            <span class="status success">
+                                Success
+                            </span>
+
+                        {% elif item.status == 'failed' %}
+                            <span class="status failed">
+                                Failed
+                            </span>
+
+                        {% elif item.status == 'blocked' %}
+                            <span class="status blocked">
+                                Blocked
+                            </span>
+
+                        {% elif item.status == 'otp_required' %}
+                            <span class="status otp-required">
+                                OTP Required
+                            </span>
+
+                        {% elif item.status == 'otp_failed' %}
+                            <span class="status otp-failed">
+                                OTP Failed
+                            </span>
+
+                        {% else %}
+                            {{ item.status }}
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ item.browser_name|default:"Unknown" }}
+                    </td>
+
+
+                    <td>
+                        {{ item.browser_version|default:"-" }}
+                    </td>
+
+
+                    <td>
+                        {{ item.operating_system|default:"Unknown" }}
+                    </td>
+
+
+                    <td>
+                        {{ item.device_type|default:"Unknown" }}
+                    </td>
+
+
+                    <td>
+                        {{ item.device_model|default:"-" }}
+                    </td>
+
+
+                    <td>
+                        {{ item.ip_address|default:"Unknown" }}
+                    </td>
+
+
+                    <td>
+                        {{ item.approximate_location|default:"Unknown" }}
+                    </td>
+
+
+                    <td>
+
+                        {% if item.otp_required %}
+
+                            {% if item.otp_verified %}
+
+                                <span class="yes">
+                                    Verified
+                                </span>
+
+                            {% else %}
+
+                                <span class="otp-required">
+                                    Required
+                                </span>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <span class="no">
+                                Not Required
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if item.is_new_browser %}
+
+                            <span class="yes">
+                                Yes
+                            </span>
+
+                        {% else %}
+
+                            <span class="no">
+                                No
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if item.is_new_device %}
+
+                            <span class="yes">
+                                Yes
+                            </span>
+
+                        {% else %}
+
+                            <span class="no">
+                                No
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if item.is_new_ip %}
+
+                            <span class="yes">
+                                Yes
+                            </span>
+
+                        {% else %}
+
+                            <span class="no">
+                                No
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if item.is_trusted_device %}
+
+                            <span class="yes">
+                                Yes
+                            </span>
+
+                        {% else %}
+
+                            <span class="no">
+                                No
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    {% else %}
+
+    <div class="empty">
+        No login history is available yet.
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

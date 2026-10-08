@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subscription History</title>
+</head>
+
+<body>
+
+    <h1>Subscription History</h1>
+
+    <p>
+        View your subscription purchases, upgrades, downgrades,
+        renewals, cancellations and expirations.
+    </p>
+
+    {% if history %}
+
+        <table border="1" cellpadding="8">
+            <tr>
+                <th>Date</th>
+                <th>Action</th>
+                <th>Plan</th>
+                <th>Details</th>
+            </tr>
+
+            {% for item in history %}
+                <tr>
+                    <td>{{ item.created_at }}</td>
+
+                    <td>
+                        {{ item.get_action_display }}
+                    </td>
+
+                    <td>
+                        {% if item.plan %}
+                            {{ item.plan.get_name_display }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if item.details %}
+                            {{ item.details }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    {% else %}
+
+        <p>No subscription history available.</p>
+
+    {% endif %}
+
+    <br>
+
+    <a href="{% url 'subscription_dashboard' %}">
+        ← Back to Subscription Dashboard
+    </a>
+
+</body>
+</html>

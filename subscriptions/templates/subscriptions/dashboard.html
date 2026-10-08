@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Subscription Dashboard</title>
+</head>
+
+<body>
+
+    <h1>Subscription Dashboard</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p><strong>{{ message }}</strong></p>
+        {% endfor %}
+    {% endif %}
+
+    {% if subscription %}
+
+        <h2>Current Subscription</h2>
+
+        <p>
+            <strong>Plan:</strong>
+            {{ subscription.plan.get_name_display }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ subscription.status|title }}
+        </p>
+
+        <p>
+            <strong>Start Date:</strong>
+            {{ subscription.start_date }}
+        </p>
+
+        <p>
+            <strong>End Date:</strong>
+            {{ subscription.end_date }}
+        </p>
+
+        <p>
+            <strong>Applications Used:</strong>
+            {{ subscription.applications_used }}
+        </p>
+
+        {% if subscription.monthly_application_limit %}
+            <p>
+                <strong>Applications Remaining:</strong>
+                {{ subscription.remaining_applications }}
+            </p>
+        {% else %}
+            <p>
+                <strong>Applications Remaining:</strong>
+                Unlimited
+            </p>
+        {% endif %}
+
+        <hr>
+
+        <h2>Subscription Actions</h2>
+
+        <p>
+            <a href="{% url 'subscription_plans' %}">
+                <button type="button">Upgrade / Change Plan</button>
+            </a>
+        </p>
+
+        <p>
+            <a href="{% url 'subscription_history' %}">
+                <button type="button">View Subscription History</button>
+            </a>
+        </p>
+
+        {% if subscription.status == 'active' %}
+
+            <p>
+                <a href="{% url 'renew_subscription' %}">
+                    <button type="button">Renew Subscription</button>
+                </a>
+            </p>
+
+            {% if subscription.monthly_application_limit is None or subscription.remaining_applications > 0 %}
+
+                <p>
+                    <a href="{% url 'apply_internship' %}">
+                        <button type="button">Apply for Internship</button>
+                    </a>
+                </p>
+
+            {% else %}
+
+                <p>
+                    <strong>
+                        You have reached your monthly application limit.
+                    </strong>
+                </p>
+
+            {% endif %}
+
+            <p>
+                <a href="{% url 'cancel_subscription' %}">
+                    <button type="button">Cancel Subscription</button>
+                </a>
+            </p>
+
+        {% endif %}
+
+    {% else %}
+
+        <h2>No Active Subscription</h2>
+
+        <p>
+            You currently do not have an active subscription.
+        </p>
+
+        <p>
+            <a href="{% url 'subscription_plans' %}">
+                <button type="button">View Subscription Plans</button>
+            </a>
+        </p>
+
+        <p>
+            <a href="{% url 'subscription_history' %}">
+                <button type="button">View Subscription History</button>
+            </a>
+        </p>
+
+    {% endif %}
+
+    <hr>
+
+    <h2>Payment History</h2>
+
+    {% if payments %}
+
+        <table border="1" cellpadding="8">
+
+            <tr>
+                <th>Date</th>
+                <th>Plan</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Transaction ID</th>
+            </tr>
+
+            {% for payment in payments %}
+
+                <tr>
+
+                    <td>{{ payment.created_at }}</td>
+
+                    <td>
+                        {{ payment.plan.get_name_display }}
+                    </td>
+
+                    <td>
+                        ₹{{ payment.amount }}
+                    </td>
+
+                    <td>
+                        {{ payment.status|title }}
+                    </td>
+
+                    <td>
+
+                        {% if payment.razorpay_payment_id %}
+                            {{ payment.razorpay_payment_id }}
+                        {% else %}
+                            -
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </table>
+
+    {% else %}
+
+        <p>No payment history available.</p>
+
+    {% endif %}
+
+    <hr>
+
+    <h2>Invoices</h2>
+
+    {% if invoices %}
+
+        <table border="1" cellpadding="8">
+
+            <tr>
+                <th>Invoice Number</th>
+                <th>Plan</th>
+                <th>Amount</th>
+                <th>Transaction ID</th>
+                <th>Date</th>
+            </tr>
+
+            {% for invoice in invoices %}
+
+                <tr>
+
+                    <td>
+                        {{ invoice.invoice_number }}
+                    </td>
+
+                    <td>
+                        {{ invoice.plan_name }}
+                    </td>
+
+                    <td>
+                        ₹{{ invoice.amount }}
+                    </td>
+
+                    <td>
+                        {{ invoice.transaction_id }}
+                    </td>
+
+                    <td>
+                        {{ invoice.created_at }}
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </table>
+
+    {% else %}
+
+        <p>No invoices available.</p>
+
+    {% endif %}
+
+    <br>
+
+    <a href="{% url 'subscription_plans' %}">
+        ← Back to Subscription Plans
+    </a>
+
+</body>
+
+</html>
