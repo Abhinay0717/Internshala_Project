@@ -11,7 +11,7 @@ from django.utils.crypto import get_random_string
 from django.utils.timezone import localtime
 from django.contrib.auth import update_session_auth_hash
 
-from .forms import ForgotPasswordForm
+from .forms import ForgotPasswordForm, RegisterForm
 
 from .models import (
     PasswordResetRequest,
@@ -49,7 +49,71 @@ def home(request):
         request,
         'home.html'
     )
+# ==========================================================
+# REGISTER
+# ==========================================================
 
+def register(request):
+
+    if request.method == 'POST':
+
+        form = RegisterForm(request.POST)
+
+        if form.is_valid():
+
+            username = form.cleaned_data['username'].strip()
+            email = form.cleaned_data['email'].strip().lower()
+            password = form.cleaned_data['password']
+
+            # Check username
+            if User.objects.filter(username=username).exists():
+
+                return render(
+                    request,
+                    'register.html',
+                    {
+                        'form': form,
+                        'error': 'Username already exists.'
+                    }
+                )
+
+            # Check email
+            if User.objects.filter(email__iexact=email).exists():
+
+                return render(
+                    request,
+                    'register.html',
+                    {
+                        'form': form,
+                        'error': 'Email is already registered.'
+                    }
+                )
+
+            # Create user securely
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
+
+            # Create user profile
+            UserProfile.objects.get_or_create(
+                user=user
+            )
+
+            return redirect('login')
+
+    else:
+
+        form = RegisterForm()
+
+    return render(
+        request,
+        'register.html',
+        {
+            'form': form
+        }
+    )
 
 # ==========================================================
 # LOGIN SECURITY HELPERS

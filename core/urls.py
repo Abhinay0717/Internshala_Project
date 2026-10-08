@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
     home,
+    register,
     user_login,
     verify_login_otp,
     change_password,
@@ -25,6 +26,17 @@ urlpatterns = [
         '',
         home,
         name='home'
+    ),
+
+
+    # ======================================================
+    # REGISTER
+    # ======================================================
+
+    path(
+        'register/',
+        register,
+        name='register'
     ),
 
 
@@ -95,6 +107,7 @@ urlpatterns = [
         name='complete_password_reset'
     ),
 
+
     # ======================================================
     # LOGIN HISTORY
     # ======================================================
@@ -104,6 +117,7 @@ urlpatterns = [
         login_history,
         name='login_history'
     ),
+
 
     # ======================================================
     # ACTIVE SESSIONS
@@ -121,13 +135,15 @@ urlpatterns = [
         name='logout_other_devices'
     ),
 
-# ======================================================
-# PROFILE
-# ======================================================
 
-path(
-    'profile/',
-    profile,
-    name='profile'
-),
+    # ======================================================
+    # PROFILE
+    # ======================================================
+
+    path(
+        'profile/',
+        profile,
+        name='profile'
+    ),
+
 ]
